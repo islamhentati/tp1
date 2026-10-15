@@ -1,3 +1,4 @@
+
 package clientPackage;
 
 import java.io.DataInputStream;
@@ -7,45 +8,43 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
-
     public static void main(String[] args) {
+        try (Socket socket = new Socket("10.248.38.120", 1234);
+             DataOutputStream out =
+                     new DataOutputStream(socket.getOutputStream());
+             DataInputStream in =
+                     new DataInputStream(socket.getInputStream());
+             Scanner scanner = new Scanner(System.in)) {
 
-        try {
-            Socket socket = new Socket("10.248.38.120", 1234);
+            System.out.println("Client connecte au serveur.");
 
-            System.out.println("Client connecté au serveur.");
+            while (true) {
+                System.out.print("Premier entier (0 pour arreter) : ");
+                int a = scanner.nextInt();
+                out.writeInt(a);
+                out.flush();
 
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-            DataInputStream input = new DataInputStream(socket.getInputStream());
-
-            Scanner scanner = new Scanner(System.in);
-
-            int x;
-
-            do {
-                System.out.print("Entrez un entier (0 pour arrêter) : ");
-                x = scanner.nextInt();
-
-                output.writeInt(x);
-                output.flush();
-
-                if (x != 0) {
-                    int resultat = input.readInt();
-
-                    System.out.println("Résultat reçu du serveur : " + resultat);
+                if (a == 0) {
+                    break;
                 }
 
-            } while (x != 0);
+                System.out.print("Deuxieme entier : ");
+                int b = scanner.nextInt();
 
-            System.out.println("Communication terminée.");
+                System.out.print("Operation (+, -, *, /) : ");
+                char operation = scanner.next().charAt(0);
 
-            scanner.close();
-            output.close();
-            input.close();
-            socket.close();
+                out.writeInt(b);
+                out.writeChar(operation);
+                out.flush();
+
+                System.out.println("Resultat : " + in.readUTF());
+            }
+
+            System.out.println("Communication terminee.");
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Erreur client : " + e.getMessage());
         }
     }
 }
