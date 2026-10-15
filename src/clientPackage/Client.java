@@ -11,7 +11,7 @@ public class Client {
     public static void main(String[] args) {
 
         try {
-            Socket socket = new Socket("localhost", 5000);
+            Socket socket = new Socket("10.248.38.120", 1234);
 
             System.out.println("Client connecté au serveur.");
 
